@@ -24,8 +24,13 @@ jobs:
         with:
           dist-path: dist/kubacovy-hory-ng/browser
           remote-path: hory
+          ftp-user: ${{ vars.FTP_USER }}
           ftp-password: ${{ secrets.FTP_PASSWORD }}
 ```
+
+`FTP_USER` must be set as a repository variable (Settings → Secrets and variables → Actions →
+Variables) in every calling repo — `frodobaggins23` is a personal account, so there's no
+org-level variable to share it from.
 
 ### Inputs
 
@@ -38,7 +43,7 @@ jobs:
 | `remote-path`     | **yes**  | —                        | Destination folder under `public_html/` on the FTP host  |
 | `ftp-host`        | no       | `ftp.kubac.website`     | SFTP host                                                  |
 | `ftp-port`        | no       | `21098`                 | SFTP port                                                  |
-| `ftp-user`        | no       | `kubawqik`               | SFTP username                                              |
+| `ftp-user`        | **yes**  | —                        | SFTP username — pass `${{ vars.FTP_USER }}`               |
 | `ftp-password`    | **yes**  | —                        | SFTP password — pass `${{ secrets.FTP_PASSWORD }}`       |
 
 Project-specific build-time secrets (e.g. an API key baked into the bundle) aren't inputs on this

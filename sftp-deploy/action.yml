@@ -28,9 +28,8 @@ inputs:
     required: false
     default: '21098'
   ftp-user:
-    description: 'SFTP username'
-    required: false
-    default: 'kubawqik'
+    description: 'SFTP username, pass in as ${{ vars.FTP_USER }} from the calling workflow'
+    required: true
   ftp-password:
     description: 'SFTP password, pass in as ${{ secrets.FTP_PASSWORD }} from the calling workflow'
     required: true
