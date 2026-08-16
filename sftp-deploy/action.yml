@@ -28,10 +28,10 @@ inputs:
     required: false
     default: '21098'
   ftp-user:
-    description: 'SFTP username, pass in as ${{ vars.FTP_USER }} from the calling workflow'
+    description: 'SFTP username, e.g. pass in the vars.FTP_USER repo variable from the calling workflow'
     required: true
   ftp-password:
-    description: 'SFTP password, pass in as ${{ secrets.FTP_PASSWORD }} from the calling workflow'
+    description: 'SFTP password, e.g. pass in the secrets.FTP_PASSWORD repo secret from the calling workflow'
     required: true
 runs:
   using: 'composite'
