@@ -1,0 +1,62 @@
+name: 'SFTP Deploy'
+description: 'Build a Node.js project and sync its output to a folder on a Namecheap (or any) SFTP host'
+inputs:
+  node-version:
+    description: 'Node.js version to use'
+    required: false
+    default: '22'
+  install-command:
+    description: 'Command used to install dependencies'
+    required: false
+    default: 'npm install'
+  build-command:
+    description: 'Command used to build the project'
+    required: false
+    default: 'npm run build'
+  dist-path:
+    description: 'Path to the built output to upload, e.g. dist or dist/app/browser'
+    required: true
+  remote-path:
+    description: 'Destination folder under public_html/ on the FTP host'
+    required: true
+  ftp-host:
+    description: 'SFTP host'
+    required: false
+    default: 'ftp.kubac.website'
+  ftp-port:
+    description: 'SFTP port'
+    required: false
+    default: '21098'
+  ftp-user:
+    description: 'SFTP username'
+    required: false
+    default: 'kubawqik'
+  ftp-password:
+    description: 'SFTP password, pass in as ${{ secrets.FTP_PASSWORD }} from the calling workflow'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v6
+
+    - name: Use Node.js ${{ inputs.node-version }}
+      uses: actions/setup-node@v6
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: 🔨 Build project
+      shell: bash
+      run: |
+        ${{ inputs.install-command }}
+        ${{ inputs.build-command }}
+
+    - name: 📂 Sync files via SFTP
+      shell: bash
+      env:
+        SSHPASS: ${{ inputs.ftp-password }}
+      run: |
+        echo "::add-mask::${{ inputs.ftp-password }}"
+        mkdir -p ~/.ssh
+        ssh-keyscan -p ${{ inputs.ftp-port }} ${{ inputs.ftp-host }} >> ~/.ssh/known_hosts 2>/dev/null
+        sshpass -e scp -v -P ${{ inputs.ftp-port }} -r ${{ inputs.dist-path }}/* ${{ inputs.ftp-user }}@${{ inputs.ftp-host }}:public_html/${{ inputs.remote-path }}/
