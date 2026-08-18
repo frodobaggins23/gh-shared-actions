@@ -58,4 +58,7 @@ runs:
         echo "::add-mask::${{ inputs.ftp-password }}"
         mkdir -p ~/.ssh
         ssh-keyscan -p ${{ inputs.ftp-port }} ${{ inputs.ftp-host }} >> ~/.ssh/known_hosts 2>/dev/null
-        sshpass -e scp -v -P ${{ inputs.ftp-port }} -r ${{ inputs.dist-path }}/* ${{ inputs.ftp-user }}@${{ inputs.ftp-host }}:public_html/${{ inputs.remote-path }}/
+        # Trailing "/." (not "/*") so scp copies dist's contents including
+        # dotfiles like .htaccess — a bare "/*" glob skips dotfiles and the
+        # SPA rewrite rules silently never reach the host.
+        sshpass -e scp -v -P ${{ inputs.ftp-port }} -r ${{ inputs.dist-path }}/. ${{ inputs.ftp-user }}@${{ inputs.ftp-host }}:public_html/${{ inputs.remote-path }}/
